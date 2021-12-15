@@ -1,0 +1,243 @@
+output 'Setting aliases'
+
+# Aliases - ZSH
+alias a="alias" # https://github.com/robbyrussell/oh-my-zsh/wiki/Cheatsheet
+alias rt="reset"
+alias cl="clear"
+alias perms="stat -f '%A'"
+alias zshrc="code ~/.zshrc"
+alias zshrct="code ~/.zshrc_theme"
+alias zshrcc="code ~/.zshrc_config"
+alias zshrcp="code ~/.zshrc_plugins"
+alias zshrca="code ~/.zshrc_aliases"
+alias zshrcf="code ~/.zshrc_functions"
+alias zshrcs="code ~/.zshrc_schedule"
+alias rrc=". ~/.zshrc"
+alias fdns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
+alias cenv="cp .env.example .env"
+alias ls="lsd -la"
+
+# Aliases - macOS
+alias mkd="killall Dock"
+alias mkt="sudo pkill TouchBarServer; sudo killall ControlStrip"
+
+# Aliases - macOS - Apps
+alias chrome="open -a 'Google Chrome'"
+# alias ydtl="youtube-dl"
+alias ytdl="you-get"
+alias fspace="ncdu"
+alias h="tldr"
+alias b="bat"
+
+# Aliases - General
+# Extends https://github.com/robbyrussell/oh-my-zsh/blob/master/lib/directories.zsh
+alias symlink="ln -s"
+alias root="sudo -i"
+alias clip="pbcopy <"
+alias cpenv="cp .env.example .env"
+alias hs="history -i"
+alias hsg="hs | grep"
+alias hst="hs | tail -n"
+alias unlock-dashcam="chflags -R nouchg '/Volumes/NEXTBASE/DCIM/PROTECTED'"
+alias aptupd="sudo apt update && sudo apt dist-upgrade && sudo apt autoremove && sudo apt clean"
+
+# Aliases - PHP
+alias phpr="php -f"
+
+# Aliases - PHP CS Fixer
+alias pcf="php-cs-fixer fix . --rules=@Symfony --using-cache=no --allow-risky=yes"
+
+# Aliases - PHPUnit
+alias pu="php vendor/bin/phpunit"
+alias puf="pu --filter"
+alias pud="XDEBUG_MODE=debug pu"
+alias pudf="puc --filter"
+alias puc="XDEBUG_MODE=coverage pu"
+alias pucf="puc --filter"
+
+# Aliases - Grep
+alias ggrep="grep -Hinr -C 3 --color=always --exclude-dir={node_modules,bower_components,vendor} "
+
+# Aliases - SSH
+alias cds="cd ~/.ssh"
+alias sadd="ssh-add -A"
+alias rmkh="rm ~/.ssh/known_hosts"
+alias sdo="ssh -i ~/.ssh/DO_OXRMBP.pem root@167.99.207.152"
+
+# Alias
+alias y="yadm"
+alias ya="y add"
+alias yaa="y add -u"
+alias ys="y status"
+alias yc="y commit -m"
+alias yca="yc -a"
+alias yca="yaa && yc"
+alias yp="y push"
+alias yu="yaa && yc \"Update stuff\" && yp"
+alias yl="y list -a"
+alias ygs="yadm git-crypt status -e"
+# alias ygsa="yl | awk '{ print "\""$0"\""}' | xargs -L1 yadm git-crypt status -e"
+alias ygsa="yl | sed -e \"s/ /\\\ /g\" | xargs -L1 yadm git-crypt status -e"
+
+# Aliases - Brew
+alias b="brew"
+alias bd="b doctor"
+alias bo="b outdated"
+alias bud="b update"
+alias bug="b upgrade"
+alias bs="b search"
+alias bi="b info"
+alias bt="b tap"
+alias bc="b cleanup"
+alias bca="b cask"
+alias bcl="bc list"
+alias bsl="b services list"
+alias bcu="b cu"
+alias bu="bud && bug && bc"
+
+# Aliases - VSCode
+alias cod="code ."
+
+# Aliases - Sublime
+alias sod="subl ."
+
+# Aliases - Kubernetes
+# See .zshrc_function for functions
+# https://kubernetes.io/docs/tasks/tools/install-kubectl/#kubectl-autocompletion-2
+alias k="kubectl"
+alias kgp="k get pods"
+alias kgpd="k get pods -n dev"
+alias kgpd="k get pods -n botkube"
+alias kgi="k get ingress"
+alias kgc="k get configmaps"
+alias kgs="k get secrets"
+alias kdp="k describe pod"
+alias kl="k logs"
+complete -F __start_kubectl k
+
+# Aliases - Docker
+alias d="docker"
+alias dl="d container ls -a" # The new way of docker ps -a
+alias dli="d images --all" # list all images
+alias drmi="d rmi" # remove image
+alias dp="d system prune --force"
+alias dpv="d system prune --force --volumes"
+alias dpa="d system prune --force --all --volumes"
+alias ddf="d system df -v"
+alias dst="d stats"
+alias ds="d stop" # container ID
+alias drm="d rm -v"  # container ID
+alias dk="d kill" # container ID
+alias da="d attach" # container ID
+alias dn="d network"
+alias de="d exec"
+alias det="d exec -it"
+alias dnl="dn ls"
+alias dni="dn inspect" # network name
+alias dnib="dni bridge"
+alias di="d inspect" # container ID
+alias dip="di -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)"
+alias dr="d run --rm" # container
+alias dswag="dr -d -p 8888:8080 --name swagger-editor swaggerapi/swagger-editor" # $ docker pull swaggerapi/swagger-editor
+
+# Aliases - Docker Compose
+alias dc="docker-compose"
+alias dcu="dc up"
+alias dcud="dc up -d"
+alias dcd="dc down --remove-orphans"
+alias dcc="dc config"
+alias dcb="dc build"
+alias dcbv="dc --verbose build"
+alias dcls="dc ps"
+alias dcl="dc logs"
+alias dcs="dc stop"
+alias dck="dc kill"
+alias dcr="dc run"
+alias dcrm="dc run --rm"
+alias dcrs="dcd && dp && dcu"
+alias dcrsd="dcd && dp && dcud"
+alias dkar="dka && dcu"
+alias dkard="dka && dcud"
+
+# Aliases - AWS - S3
+alias s3s="aws s3 sync"
+alias s3c="aws s3 cp"
+alias s3m="aws s3 mv"
+
+# Aliases - AWS - EC2
+alias e2i='aws ec2 describe-instances --filters Name=instance-state-name,Values=running --query '"'"'Reservations[].Instances[].[PublicIpAddress, Tags[?Key==`Name`].Value | [0] ]'"'"' --output text | sort -k2'
+
+# Aliases - Git
+alias cdg="cd ~/git"
+alias gf="git fetch"
+alias ga="git add -A"
+alias gc="git checkout"
+alias gcl="git clone"
+alias gp="git push"
+alias gpl="git pull"
+alias gcm="gpl && ga && git commit -S -m"
+alias gvis="gource --hide filenames --seconds-per-day 0.1 --auto-skip-seconds 1 -1920x1080 -o - | ffmpeg -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -pix_fmt yuv420p -crf 1 -threads 0 -bf 0 history_visualisation.mp4"
+
+# Aliases - Git Projects - Personal
+alias dotfiles="cd ~/Git/dotfiles"
+alias othyn="cd ~/Git/othyn.com"
+alias emily="cd ~/Git/emilyraisin.com"
+
+# Aliases - Git Projects - ULSU
+alias sums="cd ~/Git/SUMS"
+alias signage="cd ~/Git/Signage"
+alias edge="cd ~/Git/EDGE-API"
+alias core="cd ~/Git/Core-API"
+alias dashboard="cd ~/Git/Member-Dashboard"
+alias sites="cd ~/Git/SUMS-Static-Sites"
+alias build-sites="~/Git/SUMS-Static-Sites/build.sh"
+alias lincoln="cd ~/Git/Lincoln-Website"
+alias build-lincoln="~/Git/Lincoln-Website/build.sh"
+
+# Aliases - Composer
+alias c="composer"
+alias ci="c install"
+alias cda="c dump-autoload -o"
+alias cg="c global"
+alias cgo="cg outdated"
+alias cgu="cg update"
+alias cgul="cgu --lock"
+alias cn="c normalize"
+alias cgn="cg normalize"
+alias cr="c require"
+alias crm="c remove"
+alias cs="composer show"
+alias csg="cs | grep"
+
+# Aliases - Laravel
+alias l="laravel"
+alias lnw="l new" # Don't overwrite ln fool!
+alias dla="det app php artisan"
+alias dltk="dla tinker" # factory(App\User::class, 25)->create()
+alias dlt="dla test"
+alias dltf="dlt --filter"
+alias dld="dla dusk --testdox" # phpunit command to make it look like $ php artisan test
+alias dlm="dla migrate"
+alias dlmf="dla migrate:fresh"
+alias dlmfr="dla migrate:refresh"
+alias dlms="dlmf --seed"
+alias dlq="dla queue:work database --tries=1 --timeout=3600 --once"
+alias dlih="dla ide-helper:generate && dla ide-helper:meta"
+
+# Aliases - NPM & Yarn
+alias yr="yarn"
+alias yri="yr install --ignore-optional"
+alias yrd="yr dev"
+alias yrw="yr watch"
+alias yrh="yr hot"
+alias yrb="yr build"
+alias yrf="yr fix"
+alias yrs="yr serve"
+alias yeet="rm -rf node_modules && rm yarn.lock && yi"
+
+# Aliases - VueCLI
+alias vuec="vue create"
+alias vueco="vue config"
+alias vueu="vue ui"
+alias vuei="vue info"
+## When using `vue create xyz`, you can go through manual setup and save as a preset for the project

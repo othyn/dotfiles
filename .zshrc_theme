@@ -1,0 +1,27 @@
+# Set name of the theme to load --- if set to "random", it will
+# load a random theme each time oh-my-zsh is loaded, in which case,
+# to know which specific one was loaded, run: echo $RANDOM_THEME
+# See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
+output 'Setting ZSH theme'
+
+# https://github.com/denysdovhan/spaceship-prompt/blob/master/docs/Options.md
+ZSH_THEME="spaceship"
+SPACESHIP_CHAR_SUFFIX=" "
+SPACESHIP_TIME_SHOW="true"
+
+# Uncomment the following line to use case-sensitive completion.
+CASE_SENSITIVE="true"
+
+# Uncomment the following line to use hyphen-insensitive completion.
+# Case-sensitive completion must be off. _ and - will be interchangeable.
+HYPHEN_INSENSITIVE="true"
+
+# Uncomment the following line to enable command auto-correction.
+ENABLE_CORRECTION="true"
+
+# Uncomment the following line to display red dots whilst waiting for completion.
+# COMPLETION_WAITING_DOTS="true"
+# Causes a bug with the current theme that it eats the line above on tab autocompletion...
+
+# MOTD
+# if [[ -f $HOME/.motd.sh ]]; then $HOME/.motd.sh; fi

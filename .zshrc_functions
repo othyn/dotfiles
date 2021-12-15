@@ -1,0 +1,586 @@
+output 'Setting functions'
+
+##
+# Colours.
+# https://stackoverflow.com/questions/5947742/how-to-change-the-output-color-of-echo-in-linux
+##
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+ORANGE="\033[0;33m"
+BLUE="\033[0;34m"
+RESET="\033[0m"
+
+# Functions - Hooks
+# http://zsh.sourceforge.net/Doc/Release/Functions.html#Hook-Functions
+# function chpwd() {
+#     emulate -L zsh
+#     ls -lah
+# }
+
+# https://gist.github.com/davejamesmiller/1965569
+# This is a general-purpose function to ask Yes/No questions in Bash, either
+# with or without a default answer. It keeps repeating the question until it
+# gets a valid answer.
+ask() {
+    # https://djm.me/ask
+    local prompt default reply
+
+    if [ "${2:-}" = "Y" ]; then
+        prompt="Y/n"
+        default=Y
+    elif [ "${2:-}" = "N" ]; then
+        prompt="y/N"
+        default=N
+    else
+        prompt="y/n"
+        default=
+    fi
+
+    while true; do
+
+        # Ask the question (not using "read -p" as it uses stderr not stdout)
+        echo -n "$1 [$prompt] "
+
+        # Read the answer (use /dev/tty in case stdin is redirected from somewhere else)
+        read reply </dev/tty
+
+        # Default?
+        if [ -z "$reply" ]; then
+            reply=$default
+        fi
+
+        # Check if the reply is valid
+        case "$reply" in
+            Y*|y*) return 0 ;;
+            N*|n*) return 1 ;;
+        esac
+
+    done
+}
+
+##
+# Helper function for displaying hanging log lines.
+##
+function log() {
+    # OPTIONAL: This nicely formats numbers passed as the second param
+    if [ "${2}" = "" ]; then
+        PRINT_STRING="${1}..."
+    else
+        PRINT_NUMBER=$(echo "${2}" | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta')
+        PRINT_STRING="${1}: ${PRINT_NUMBER}..."
+    fi
+
+    printf "> %-65s" "${PRINT_STRING}"
+    #           ^^-- Needs to be set to the length of the longest log message, it's
+    #                purely aesthetic, but it aligns all the log termination messages.
+}
+
+##
+# Helper functions for displaying termination log lines.
+##
+function logDone() {
+    printf "${GREEN}done!${RESET}\n"
+}
+
+function logInfo() {
+    # OPTIONAL: This nicely formats numbers passed as the second param
+    # if [ "${2}" == "" ]; then
+    #     PRINT_STRING="${1}"
+    # else
+    #     PRINT_NUMBER=$(echo "${2}" | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta')
+    #     PRINT_STRING="${1}: ${PRINT_NUMBER}"
+    # fi
+
+    # printf "${BLUE}[Info]${RESET} ${PRINT_STRING}\n"
+
+    printf "${BLUE}[Info]${RESET} ${1}\n"
+}
+
+function logInfoTimed() {
+    printf "${BLUE}[Info]${RESET} [$(date +"%Y-%m-%d %H-%M-%S")] ${1}\n"
+}
+
+function logWarn() {
+    printf "${ORANGE}[Warn]${RESET} ${1}\n"
+}
+
+function logError() {
+    printf "${RED}error!${RESET}\n"
+    printf "${RED}[Error]${RESET} ${1}\n"
+    exit $2
+}
+
+function debug() {
+    echo "$1" >> $HOME/log/zshrcf_command_debug.log
+}
+
+# Functions - SSH
+# Fix the SSH folder permissions!
+function fsp() {
+    # Directory perms
+    log "Fixing SSH directory permissions"
+    chmod 700 ~/.ssh
+    logDone
+
+    # All pem and non-extension private keys
+    # Do this first as the non-extension will set it for all
+    log "Fixing private key permissions"
+    chmod 600 ~/.ssh/*
+    chmod 600 ~/.ssh/*.pem
+    logDone
+
+    # SSH file perms
+    log "Fixing SSH configuration permissions"
+    chmod 644 ~/.ssh/known_hosts
+    chmod 644 ~/.ssh/config
+    # chmod 644 ~/.ssh/authorized_keys
+    logDone
+
+    # Public key perms
+    log "Fixing public key permissions"
+    chmod 644 ~/.ssh/*.pub
+    logDone
+}
+
+# Functions - Brew
+# Switch PHP version in brew
+function phpsw() {
+    if [ -z "$1" ]; then
+        logInfo "You need to provide a PHP formulae version to switch to in format:"
+        logInfo "$ phpsw 8.1"
+
+        if command -v jq >/dev/null 2>&1; then
+            logInfo "Installed PHP versions via Brew:"
+            brew info --json php | jq -r '.[].versioned_formulae[]'
+        else
+            logInfo "Please install jq to list installed PHP versions via: $ brew install jq"
+        fi
+
+        return 1
+    fi
+
+    local phpFormulaeVersion="php@$1"
+
+    if brew ls --versions $phpFormulaeVersion > /dev/null; then
+        logInfo "${phpFormulaeVersion} is already installed, continuing..."
+    else
+        logInfo "${phpFormulaeVersion} is not installed, installing..."
+
+        brew install $phpFormulaeVersion
+
+        logInfo "${phpFormulaeVersion} installed!"
+    fi
+
+    logInfo "Now linking ${phpFormulaeVersion} and making it active!"
+
+    brew unlink php && brew link --force --overwrite $phpFormulaeVersion
+
+    logInfo "Done! ${phpFormulaeVersion} is now active:"
+
+    php -v
+}
+
+# Switch Node version in brew
+function nodesw() {
+    if [ -z "$1" ]; then
+        logInfo "You need to provide a Node formulae version to switch to in format:"
+        logInfo "$ nodesw 16"
+
+        if command -v jq >/dev/null 2>&1; then
+            logInfo "Installed Node versions via Brew:"
+            brew info --json node | jq -r '.[].versioned_formulae[]'
+        else
+            logInfo "Please install jq to list installed Node versions via: $ brew install jq"
+        fi
+
+        return 1
+    fi
+
+    local nodeFormulaeVersion="node@$1"
+
+    if brew ls --versions $nodeFormulaeVersion > /dev/null; then
+        logInfo "${nodeFormulaeVersion} is already installed, continuing..."
+    else
+        logInfo "${nodeFormulaeVersion} is not installed, installing..."
+
+        brew install $nodeFormulaeVersion
+
+        logInfo "${nodeFormulaeVersion} installed!"
+    fi
+
+    logInfo "Now linking ${nodeFormulaeVersion} and making it active!"
+
+    brew unlink node && brew link --force --overwrite $nodeFormulaeVersion
+
+    logInfo "Done! ${nodeFormulaeVersion} is now active:"
+
+    node -v
+}
+
+# Functions - K8's
+# List available kubectl contexts
+function kswl() {
+    echo "Listing available kubectl contexts:"
+    ls ~/.kube/*-config.yaml
+}
+
+# Switch kubectl context
+function ksw() {
+    if [ -z "$1" ]; then
+        echo "You need to provide the prefix for a config to switch to!"
+        echo "Expected usecase: {param}-config.yaml"
+        echo "Available contexts:"
+
+        kswl
+
+        return 1
+    fi
+
+    export KUBECONFIG=~/.kube/${1}-config.yaml
+
+    echo "Loaded context: $(kubectl config view --output jsonpath='{.clusters[0].name}')!"
+}
+
+# Fix kube config permissions
+function kcfp() {
+    kswl
+
+    echo "Fixing kubectl config permissions, should only be readable by the user"
+    chmod 600 ~/.kube/*-config.yaml
+
+    kswl
+}
+
+# Functions - Git
+function gs() {
+    if [ -z "$1" ]; then
+        echo "You need a branch to checkout!"
+        return 1
+    fi
+
+    if [ -z "$2" ]; then
+        echo "You need an origin branch!"
+        return 1
+    fi
+
+    git checkout $1 \
+    && git pull origin $2 \
+    && git push \
+    && git checkout $2
+}
+
+function gtr() {
+    if [ -z "$1" ]; then
+        echo "You need the old tag to rename from!"
+        return 1
+    fi
+
+    if [ -z "$2" ]; then
+        echo "You need the new tag to rename to!"
+        return 1
+    fi
+
+    git tag $2 $1
+    git tag -d $1
+    git push origin :refs/tags/$1
+    git push --tags
+}
+
+function gtd() {
+    if [ -z "$1" ]; then
+        echo "You need a tag to delete!"
+        return 1
+    fi
+
+    git tag -d $1
+    git push origin :refs/tags/$1
+}
+
+function gtm() {
+    if [ -z "$1" ]; then
+        echo "You need a tag to move!"
+        return 1
+    fi
+
+    if [ -z "$2" ]; then
+        echo "You need a commit hash to move the tag to!"
+        return 1
+    fi
+
+    git tag -d $1
+    git push origin :refs/tags/$1
+    git tag $1 $2
+    git push origin $1
+
+    echo '!> Remember to update the GitHub release, as it will go back to being a draft and detach from the tag.'
+    echo '!> Although it should pre-fill with the tag that it has become detatched from!'
+}
+
+# A quick wrapper method for finding a phrase across a directory with multi-thread support, with dependency directories ignored by default
+# Find:
+#   > `-type d` = Type Directory.
+#   > `-o` = OR.
+#   > `-prune` = Removes all matches before it.
+#   > `-name` = matches a name in a path (file or directory name).
+#   > `-print` = specifies what to print as part of the conditional eval order.
+#   >>> https://stackoverflow.com/a/1489405/4494375
+# Xargs:
+#   > Simply to spool off a process per outputted line.
+# Grep:
+#   > `-H` = Follow symlinks and search files within the symlinked directory too.
+#   > `-i` = Ignore case.
+#   > `-n` = Show line numbers.
+#   > `-r` = Searches directories recursively. By default, links to directories are followed.
+#   > `-C` = Context, amount of surrounding lines to show.
+#   > `--color` = Colour mode
+# Misc:
+#   > The `:=` inside a variable readout is parameter expansion from the POSIX spec, and sets a default value for the parameter
+#   >>> https://unix.stackexchange.com/a/25434/194299
+function ffind() {
+    if [ -z "$1" ]; then
+        echo "Please specify a directory for find to search."
+        return 1
+    fi
+    if [ -z "$2" ]; then
+        echo "Please specify a file type/name for find to pluck."
+        return 1
+    fi
+    if [ -z "$3" ]; then
+        echo "Please specify a phrase for grep to find."
+        return 1
+    fi
+
+    find $1 -type d \( -name 'node_modules' -o -name 'vendor' -o -name 'bower_components' \) -prune -o -name $2 -print | xargs grep -Hinr -C "${4:=5}" --color=always $3
+}
+
+# Docker Kill All
+# Quick function to tidy up all Dockers shit!
+function dka() {
+    if ask "Are you sure you wish to destroy all containers on the system? Did you mean dcd instead?" Y; then
+        echo "Stopping all docker instances..."
+        ds $(docker ps -a -q)
+
+        echo "Removing all docker instances..."
+        drm $(docker ps -a -q)
+
+        echo "Quick docker prune..."
+        dp
+    fi
+}
+
+# ... this one also takes out all the associated volumes too.
+function dkav() {
+    if ask "Are you sure you wish to destroy all containers and associated volumes on the system? Did you mean dcd instead?" Y; then
+        echo "Stopping all docker instances..."
+        ds $(docker ps -a -q)
+
+        echo "Removing all docker instances..."
+        drm $(docker ps -a -q)
+
+        echo "Quick docker prune, including all associated volumes..."
+        dpv
+    fi
+}
+
+# ... this one also takes out all the associated volumes and all container images too.
+function dkaa() {
+    if ask "Are you sure you wish to destroy all containers, associated volumes and all container images on the system? Did you mean dcd instead?" Y; then
+        echo "Stopping all docker instances..."
+        ds $(docker ps -a -q)
+
+        echo "Removing all docker instances..."
+        drm $(docker ps -a -q)
+
+        echo "Quick docker prune, including all associated volumes and all container images..."
+        dpa
+    fi
+}
+
+# Quick function to lauch a shell on a docker container (alpine)
+function dsh() {
+    de -t -i $1 sh
+}
+
+# Runs artisan on a docker container of your choice
+function dam() {
+    det $1 php artisan migrate:fresh --seed
+}
+
+
+# Kubernetes: Run command in pod
+function kep() {
+    kubectl exec $1 -- /bin/sh -c "${2}"
+}
+
+# Kubernetes: Run command in pod container
+function kepc() {
+    kubectl exec $1 --container ${2} -- /bin/sh -c "${3}"
+}
+
+# Kubernetes: Restart deployment
+function kr() {
+    if [ -z "$1" ]; then
+        echo "Please specify a deployment to run the restart for"
+        return 1
+    fi
+
+    if [ -z "$2" ]; then
+        kubectl rollout restart deployment $1
+    else
+        kubectl rollout restart deployment --namespace=$2 $1
+    fi
+}
+
+# Kubernetes: Delete infrastructure by file
+function kd() {
+    if [ -z "$1" ]; then
+        echo "Please specify a config file to run the deletion for"
+        return 1
+    fi
+
+    kubectl delete -f $1
+}
+
+# Kubernetes: Logs for pod
+function klp() {
+    if [[ -z "${1}" ]] ; then
+        echo '[Error] Please provide a pod name to get the logs for'
+        echo 'Use "kubectl get pods" to list pod names'
+        return 1
+    fi
+
+    TIMESTAMP=$(date +%s)
+    KUBERNETES_POD_NAME="${1}"
+    LARAVEL_LOG_PATH="/var/www/storage/logs/laravel.log"
+    LOCAL_LOG_PATH="./${KUBERNETES_POD_NAME}.${TIMESTAMP}.laravel.log"
+
+    echo "Dumping '${LARAVEL_LOG_PATH}' for '${KUBERNETES_POD_NAME}'"
+
+    kubectl exec "${KUBERNETES_POD_NAME}" -- /bin/sh -c "cat ${LARAVEL_LOG_PATH}" > "${LOCAL_LOG_PATH}"
+
+    echo "Dumped to '${LOCAL_LOG_PATH}'"
+}
+
+# Kubernetes: Logs for deployment
+function kld() {
+    if [[ -z "${1}" ]] ; then
+        echo '[Error] Please provide a deployment name to get the logs for'
+        echo 'Use "kubectl get pods" to list deployment names'
+        return 1
+    fi
+
+    TIMESTAMP=$(date +%s)
+    KUBERNETES_DEPLOYMENT_NAME="${1}"
+    LARAVEL_LOG_PATH="/var/www/storage/logs/laravel.log"
+
+    kubectl get pods -l app="${KUBERNETES_DEPLOYMENT_NAME}" -o name | while read -r LINE ; do
+        KUBERNETES_POD_NAME="${LINE#pod/}"
+        # LOCAL_LOG_PATH="${HOME}/Downloads/${KUBERNETES_POD_NAME}.${TIMESTAMP}.laravel.log"
+        LOCAL_LOG_PATH="./${KUBERNETES_POD_NAME}.${TIMESTAMP}.laravel.log"
+
+        echo "Dumping '${LARAVEL_LOG_PATH}' for '${KUBERNETES_POD_NAME}'"
+
+        kubectl exec "${KUBERNETES_POD_NAME}" -- /bin/sh -c "cat ${LARAVEL_LOG_PATH}" > "${LOCAL_LOG_PATH}"
+
+        echo "Dumped to '${LOCAL_LOG_PATH}'"
+    done
+}
+
+# Enable githooks in all directories in this directory
+function gha() {
+    for directory in ./*/; do
+        clear
+        echo ">>> Currently in: $directory"
+        cd "$directory"
+        echo ">>> Apply git hooks?"
+        "$(git rev-parse --git-dir)/configure.sh"
+    done
+    clear
+    echo ">>> Done!"
+}
+
+# Compare MD5 checksum to verify file integrity
+# https://stackoverflow.com/questions/33049634/compare-md5-sums-in-bash-script
+function compare_md5() {
+    md5_to_test=$1
+    md5_from_file=$(md5sum "$2" | cut -d " " -f1)
+
+    md5_results="Input: $md5_to_test\nFile:  $md5_from_file"
+
+    if [[ $md5_to_test == $md5_from_file ]]; then
+        echo -e "\n\e[92mSUCCESS\e[39m\n$md5_results"
+    else
+        echo -e "\n\e[91mFAILURE\e[39m\n$md5_results"
+    fi
+}
+
+# https://coderwall.com/p/yw96rg/display-all-commands-offered-by-your-installed-oh-my-zsh-plugins
+function commands() {
+    PLUGIN_PATH="$ZSH/plugins/"
+    for plugin in $plugins; do
+        echo "\n\nPlugin: $plugin"; grep -r "^function \w*" $PLUGIN_PATH$plugin | awk '{print $2}' | sed 's/()//'| tr '\n' '\n'; grep -r "^alias" $PLUGIN_PATH$plugin | awk '{print $2}' | sed 's/=.*//' |  tr '\n' '\n'
+    done
+}
+
+function retag_ecr_image() {
+    if [[ -z "${1}" ]] ; then
+        echo '[Error] Please provide the ECR repository name to update image tags against'
+        return 1
+    fi
+
+    if [[ -z "${2}" ]] ; then
+        echo '[Error] Please provide the current tag name to find the image by'
+        return 1
+    fi
+
+    if [[ -z "${3}" ]] ; then
+        echo '[Error] Please provide a new tag to add to the image'
+        return 1
+    fi
+
+    local MANIFEST=$(aws ecr batch-get-image --repository-name "${1}" --image-ids imageTag="${2}" --query 'images[].imageManifest' --output text)
+
+    aws ecr put-image --repository-name "${1}" --image-tag "${3}" --image-manifest "${MANIFEST}" --output table
+}
+
+function delete_ecr_image_tag() {
+    if [[ -z "${1}" ]] ; then
+        echo '[Error] Please provide the ECR repository name to update image tags against'
+        return 1
+    fi
+
+    if [[ -z "${2}" ]] ; then
+        echo '[Error] Please provide the current tag name to find the image by'
+        return 1
+    fi
+
+    if ask "Are you sure you wish to delete this tag? If it is the last tag for the image, then the image will also be deleted!" Y; then
+        aws ecr batch-delete-image --repository-name "${1}" --image-ids imageTag="${2}" --output table
+    fi
+}
+
+# Functions - Zoom
+# Zoom Malware & Spyware bypass to join via web
+# Above needs the meeting ID, and will launch in chrome, as its the only browser that works
+function zoom() {
+    if [ -z "$1" ]; then
+        echo "You need a meeting ID to join!"
+        return 1
+    fi
+
+    chrome "https://us02web.zoom.us/wc/join/${1}"
+}
+
+# Override for mv to create a path if it doesn't exist
+# @see https://stackoverflow.com/a/10326993/4494375
+# function mv ()
+# {
+#     dir="$2"
+#     tmp="$2";
+
+#     tmp="${tmp: -1}"
+
+#     [ "$tmp" != "/" ] && dir="$(dirname "$2")"
+
+#     [ -a "$dir" ] || mkdir -p "$dir" && mv "$@"
+# }

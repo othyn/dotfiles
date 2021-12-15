@@ -1,0 +1,62 @@
+subline 'Running schedule'
+
+# Capture base reference time window
+ONE_WEEK_AGO=$(gdate -u --date "1 week ago" +%s)
+
+# Prompt to check for updates
+subline 'Determining if updates should be checked'
+LAST_UPDATE_CHECK_FILE="$HOME/.othyn_last_update_check"
+
+if [ ! -f "$LAST_UPDATE_CHECK_FILE" ]; then
+    gdate -u +%s > "$LAST_UPDATE_CHECK_FILE"
+    LAST_UPDATE_CHECK=0
+else
+    LAST_UPDATE_CHECK=$(cat "$LAST_UPDATE_CHECK_FILE")
+fi
+
+if [ $LAST_UPDATE_CHECK -lt $ONE_WEEK_AGO ]; then
+    if ask "Last update check was over a week ago, check for updates?" Y; then
+        subline 'Running update checks'
+
+        subline 'Checking brew'
+        bud
+        bo
+        if ask "Install available updates?" Y; then
+            subline 'Running brew update scripts'
+            bu
+        fi
+
+        subline 'Checking composer'
+        cgo
+        if ask "Install available updates?" Y; then
+            subline 'Running composer update scripts'
+            cgu
+        fi
+
+        subline 'Running brew bundle backup'
+        brew bundle dump -f --file=~/Brewfile
+        ls -lah /Applications > ~/App.list
+
+        subline 'Running vscode extension backup'
+        ~/bin/sh/vscode__backup_extensions.sh
+
+        # subline 'Running yadm status'
+        # yadm status
+        # if ask "Commit all outstanding?" Y; then
+        #     subline 'Committing all the everything things'
+        #     yadm commit -a -m "This was a lazy YOLO update commit made by my automation on $(gdate)"
+        #     yadm push
+        # fi
+
+        subline 'Running cron backup'
+        # To restore, simply pass the file to crontab
+        # $ crontab ${CRONTAB}
+        # $ crontab -l
+        crontab -l > ~/crontab.backup
+
+        subline 'Update checks complete'
+        gdate -u +%s > "$LAST_UPDATE_CHECK_FILE"
+    fi
+else
+    subline 'All up to date'
+fi

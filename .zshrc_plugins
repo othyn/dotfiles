@@ -1,0 +1,36 @@
+# Plugins
+# https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins
+output 'Setting ZSH plugins'
+plugins=(
+    chucknorris
+    composer
+    git
+    git-extras
+    osx
+    zsh-autosuggestions
+
+    # aterminal
+    # aws
+    # command-not-found
+    # common-aliases
+    # copyfile
+    # dotenv
+    # encode64
+    # extract
+    # geeknote
+    # git-flow
+    # gpg-agent
+    # history
+    # httpie
+    # jsontools
+    # npm
+    # perms
+    # pip
+    # pod
+    # rand-quote
+    # sublime
+    # urltools
+    # vagrant
+    # web-search
+    # yarn
+)
