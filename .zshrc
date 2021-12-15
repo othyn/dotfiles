@@ -27,7 +27,7 @@ header '🚀' 'Init new othyn env!' | lolcat
 
 # macOS default at /etc/paths contains /usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin
 line '🧭' 'Setting PATH'
-export PATH="$HOME/bin:$HOME/.composer/vendor/bin:$(yarn global bin):/usr/bin/gem:/usr/local/bin:/usr/local/sbin:$PATH"
+export PATH="$HOME/bin:$(brew --prefix)/bin:$(brew --prefix)/sbin:$(composer global config bin-dir --absolute --quiet):$(yarn global bin):/usr/bin/gem:$PATH"
 
 # Run these to add Sublime Merge and Text to the PATH
 # https://www.sublimemerge.com/docs/command_line#mac
