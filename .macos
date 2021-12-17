@@ -125,6 +125,9 @@ defaults write com.apple.Siri StatusMenuVisible -bool false
 defaults delete NSGlobalDomain AppleInterfaceStyle
 defaults write NSGlobalDomain AppleInterfaceStyleSwitchesAutomatically -bool true
 
+# Allow the use of the tab key to change focus selection
+defaults write NSGlobalDomain AppleKeyboardUIMode -int 2
+
 ###############################################################################
 # Menubar                                                                     #
 ###############################################################################
