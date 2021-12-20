@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/zsh
 
 # Mac OS X configuration
 #
@@ -48,9 +48,12 @@ fi
 ###############################################################################
 
 # Restart automatically if the computer freezes
-if [[ "$RUN_AS_ROOT" = true ]]; then
-    systemsetup -setrestartfreeze on
-fi
+# if [[ "$RUN_AS_ROOT" = true ]]; then
+#     systemsetup -setrestartfreeze on
+# fi
+# This errors out with the following error on macOS 12.1:
+# 2021-12-20 22:41:09.743 systemsetup[51411:164810] ### Error:-99 File:/System/Volumes/Data/SWE/macOS/BuildRoots/5b2e67f8af/Library/Caches/com.apple.xbs/Sources/Admin/Admin-911/InternetServices.m Line:379
+# Can't find any info on it online
 
 # Enable Firewall
 if [[ "$RUN_AS_ROOT" = true ]]; then
@@ -480,6 +483,7 @@ defaults write com.apple.messageshelper.MessageController SOInputLineSettings -d
 # Restart affected applications if `--no-restart` flag is not present.
 if [[ ! ($* == *--no-restart*) ]]; then
     for app in "cfprefsd" "Dock" "Finder" "Mail" "SystemUIServer" "Terminal"; do
+        echo "killed ${app}"
         killall "${app}" > /dev/null 2>&1
     done
 fi
