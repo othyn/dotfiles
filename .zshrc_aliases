@@ -16,6 +16,8 @@ alias rrc=". ~/.zshrc"
 alias fdns="sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder"
 alias cenv="cp .env.example .env"
 alias ls="lsd -la"
+alias wsh="if [ -n \"$ZSH_VERSION\" ]; then echo \"Shell is zsh\"; elif [ -n \"$BASH_VERSION\" ]; then echo \"Shell is bash\"; fi"
+alias zshv="zsh --version" # $ZSH_VERSION
 
 # Aliases - macOS
 alias mkd="killall Dock"

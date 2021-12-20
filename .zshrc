@@ -29,6 +29,10 @@ header '🚀' 'Init new othyn env!' | lolcat
 line '🧭' 'Setting PATH'
 export PATH="$HOME/bin:$(brew --prefix)/bin:$(brew --prefix)/sbin:$(composer global config bin-dir --absolute --quiet):$(yarn global bin):/usr/bin/gem:$PATH"
 
+# Add the arm/M1 brew installation path so that it can find the brew installation of spaceship
+# https://github.com/spaceship-prompt/spaceship-prompt/issues/1057#issuecomment-981133419
+# fpath=( "$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath )
+
 # Run these to add Sublime Merge and Text to the PATH
 # https://www.sublimemerge.com/docs/command_line#mac
 # ln -s "/Applications/Sublime Merge.app/Contents/SharedSupport/bin/smerge" ~/bin/smerge
@@ -85,21 +89,10 @@ unsetopt nomatch
 line '🔏' 'Case insensitive'
 zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]} l:|=* r:|=*'
 
-# Set architecture-specific brew share path.
-line '🍺' 'Setting brew share path'
-arch_name="$(uname -m)"
-if [ "${arch_name}" = "x86_64" ]; then
-    share_path="/usr/local/share"
-elif [ "${arch_name}" = "arm64" ]; then
-    share_path="/opt/homebrew/share"
-else
-    echo "Unknown architecture: ${arch_name}"
-fi
-
 # https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/INSTALL.md
 # To activate the syntax highlighting, add the following ~~at the end~~ of your .zshrc:
 line '💡' 'Loading syntax highlighting'
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh > ~/logs/zshrc/last__syntax_highlighting.log 2>&1
+source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" > ~/logs/zshrc/last__syntax_highlighting.log 2>&1
 
 line '🌟' 'New commands: ranger ncdu speedread cmatrix bat ffmpeg imagemagick cpufetch lsd bpytop ascii-image-converter speedtest-cli smartctl'
 
