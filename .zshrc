@@ -39,6 +39,11 @@ export PATH="$HOME/bin:$(brew --prefix)/bin:$(brew --prefix)/sbin:$(composer glo
 # To reset to default: defaults delete -g com.apple.mouse.scaling
 # defaults write -g com.apple.mouse.scaling -integer -1
 
+# Ensure logs directory exists
+if [ ! -d ~/logs/zshrc ]; then
+    mkdir -p ~/logs/zshrc
+fi
+
 # Init theme
 # Needs to be init'd before ZSH config as the theme is loaded into the config
 line '🎨' 'Loading ~/.zshrc_theme'
