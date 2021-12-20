@@ -31,7 +31,7 @@ export PATH="$HOME/bin:$(brew --prefix)/bin:$(brew --prefix)/sbin:$(composer glo
 
 # Add the arm/M1 brew installation path so that it can find the brew installation of spaceship
 # https://github.com/spaceship-prompt/spaceship-prompt/issues/1057#issuecomment-981133419
-# fpath=( "$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath )
+fpath=( "$HOMEBREW_PREFIX/share/zsh/site-functions" $fpath )
 
 # Run these to add Sublime Merge and Text to the PATH
 # https://www.sublimemerge.com/docs/command_line#mac
