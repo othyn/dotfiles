@@ -135,8 +135,10 @@ defaults write NSGlobalDomain AppleKeyboardUIMode -int 2
 # Fullscreen menu bar enabled
 defaults write NSGlobalDomain AppleMenuBarVisibleInFullscreen -bool false
 
-# Hide the menu bar at all times
-defaults write NSGlobalDomain _HIHideMenuBar -bool true
+# Don't hide the menu bar at all times
+# No point on the M1 Pro as the menu bar is nestled into space you can't use anyway due to the notch
+defaults write NSGlobalDomain _HIHideMenuBar -bool false
+defaults write NSGlobalDomain AppleMenuBarVisibleInFullscreen -bool true
 
 # Menu bar clock
 defaults write com.apple.menuextra.clock IsAnalog -bool true
