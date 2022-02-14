@@ -33,10 +33,6 @@ if [ $LAST_UPDATE_CHECK -lt $ONE_WEEK_AGO ]; then
             cgu
         fi
 
-        subline 'Running brew bundle backup'
-        brew bundle dump -f --file=~/Brewfile
-        ls -lah /Applications > ~/App.list
-
         subline 'Running vscode extension backup'
         ~/bin/sh/vscode__backup_extensions.sh
 
@@ -52,7 +48,7 @@ if [ $LAST_UPDATE_CHECK -lt $ONE_WEEK_AGO ]; then
         # To restore, simply pass the file to crontab
         # $ crontab ${CRONTAB}
         # $ crontab -l
-        crontab -l > ~/crontab.backup
+        crontab -l > ~/.crontab.backup
 
         subline 'Update checks complete'
         gdate -u +%s > "$LAST_UPDATE_CHECK_FILE"

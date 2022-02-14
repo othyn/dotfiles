@@ -522,7 +522,7 @@ function commands() {
     done
 }
 
-function retag_ecr_image() {
+function add_ecr_image_tag() {
     if [[ -z "${1}" ]] ; then
         echo '[Error] Please provide the ECR repository name to update image tags against'
         return 1

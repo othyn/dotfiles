@@ -1,0 +1,15 @@
+.gitattributes !filter !diff
+
+.ssh/* filter=git-crypt diff=git-crypt
+.aws/* filter=git-crypt diff=git-crypt
+
+.config/istat.ismp filter=git-crypt diff=git-crypt
+
+*launcher_profiles.json filter=git-crypt diff=git-crypt
+*launcher_settings.json filter=git-crypt diff=git-crypt
+
+.config/gh/* filter=git-crypt diff=git-crypt
+
+.kube/ditto-config.yaml filter=git-crypt diff=git-crypt
+
+^^^^^^^^^ NEED TO FIGURE OUT WHAT FILES I NEED TO PUT IN NEW dotfiles-secrets REPO ENCRYPTED BEHIND ANSIBLE

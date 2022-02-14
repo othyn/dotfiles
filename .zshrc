@@ -25,9 +25,31 @@ function subline() {
 
 header '🚀' 'Init new othyn env!' | lolcat
 
+# Setup Python
+# See: https://www.mediaglasses.blog/2021/10/30/managing-python-on-macos-monterey/
+# $ brew install pyenv
+# $ pyenv install --list
+# < select the most up to date version from the list, helpful to use grep! >
+# $ pyenv install 3.10.1
+# $ pyenv global 3.10.1
+# $ pyenv version
+# > 3.10.1 (set by /Users/ben/.pyenv/version)
+# < reload shell >
+# $ rrc
+# $ python --version
+# > Python 3.10.1
+# $ which python
+# > /Users/ben/.pyenv/shims/python
+# $ pip install --upgrade pip
+export PYENV_ROOT="$HOME/.pyenv"
+if command -v pyenv 1>/dev/null 2>&1; then
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+fi
+
 # macOS default at /etc/paths contains /usr/local/bin:/usr/bin:/usr/sbin:/bin:/sbin
 line '🧭' 'Setting PATH'
-export PATH="$HOME/bin:$(brew --prefix)/bin:$(brew --prefix)/sbin:$(composer global config bin-dir --absolute --quiet):$(yarn global bin):/usr/bin/gem:$PATH"
+export PATH="$HOME/bin:$(brew --prefix)/bin:$(brew --prefix)/sbin:$(composer global config bin-dir --absolute --quiet):$(yarn global bin):/usr/bin/gem:$PYENV_ROOT/bin:$PATH"
 
 # Add the arm/M1 brew installation path so that it can find the brew installation of spaceship
 # https://github.com/spaceship-prompt/spaceship-prompt/issues/1057#issuecomment-981133419

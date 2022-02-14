@@ -4,6 +4,8 @@
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 output 'Setting ZSH theme'
 
+ZSH_THEME="spaceship"
+
 # https://spaceship-prompt.sh/options/
 autoload -U promptinit; promptinit
 prompt spaceship
