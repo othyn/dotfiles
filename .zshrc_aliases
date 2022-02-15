@@ -170,6 +170,7 @@ alias s3m="aws s3 mv"
 alias e2i='aws ec2 describe-instances --filters Name=instance-state-name,Values=running --query '"'"'Reservations[].Instances[].[PublicIpAddress, Tags[?Key==`Name`].Value | [0] ]'"'"' --output text | sort -k2'
 
 # Aliases - Git
+alias github-test="ssh -T git@github.com"
 alias cdg="cd ~/git"
 alias gf="git fetch"
 alias ga="git add -A"
