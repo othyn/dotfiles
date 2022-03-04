@@ -568,7 +568,7 @@ function zoom() {
         return 1
     fi
 
-    chrome "https://us02web.zoom.us/wc/join/${1}"
+    open -a Firefox "https://us02web.zoom.us/wc/join/${1}"
 }
 
 # Override for mv to create a path if it doesn't exist

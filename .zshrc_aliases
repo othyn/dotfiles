@@ -20,8 +20,8 @@ alias wsh="if [ -n \"$ZSH_VERSION\" ]; then echo \"Shell is zsh\"; elif [ -n \"$
 alias zshv="zsh --version" # $ZSH_VERSION
 
 # Aliases - macOS
-alias mkd="killall Dock"
-alias mkt="sudo pkill TouchBarServer; sudo killall ControlStrip"
+alias kd="killall Dock"
+alias kq="pgrep QuickLookUIService | xargs sudo kill -9"
 
 # Aliases - macOS - Apps
 alias chrome="open -a 'Google Chrome'"
