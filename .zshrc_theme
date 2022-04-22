@@ -12,6 +12,9 @@ prompt spaceship
 SPACESHIP_CHAR_SUFFIX=" "
 SPACESHIP_TIME_SHOW="true"
 
+SPACESHIP_KUBECTL_SHOW="true"
+SPACESHIP_KUBECTL_SYMBOL="🚀 "
+
 # Uncomment the following line to use case-sensitive completion.
 CASE_SENSITIVE="true"
 

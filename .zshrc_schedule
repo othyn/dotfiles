@@ -51,8 +51,11 @@ if [ $LAST_UPDATE_CHECK -lt $ONE_WEEK_AGO ]; then
         crontab -l > ~/.crontab.backup
 
         subline 'Update checks complete'
-        gdate -u +%s > "$LAST_UPDATE_CHECK_FILE"
+    else
+        subline "I won't ask again for a while"
     fi
+
+    gdate -u +%s > "$LAST_UPDATE_CHECK_FILE"
 else
     subline 'All up to date'
 fi

@@ -217,6 +217,44 @@ function nodesw() {
     node -v
 }
 
+# Switch InfluxDB version in brew
+function influxsw() {
+    if [ -z "$1" ]; then
+        logInfo "You need to provide an InfluxDB formulae version to switch to in format:"
+        logInfo "$ influxsw 1"
+
+        if command -v jq >/dev/null 2>&1; then
+            logInfo "Installed InfluxDB versions via Brew:"
+            brew info --json influxdb | jq -r '.[].versioned_formulae[]'
+        else
+            logInfo "Please install jq to list installed InfluxDB versions via: $ brew install jq"
+        fi
+
+        return 1
+    fi
+
+    local influxFormulaeVersion="influxdb@$1"
+
+    if brew ls --versions $influxFormulaeVersion > /dev/null; then
+        logInfo "${influxFormulaeVersion} is already installed, continuing..."
+    else
+        logInfo "${influxFormulaeVersion} is not installed, installing..."
+
+        brew install $influxFormulaeVersion
+
+        logInfo "${influxFormulaeVersion} installed!"
+    fi
+
+    logInfo "Now linking ${influxFormulaeVersion} and making it active!"
+
+    brew unlink influxdb && brew link --force --overwrite $influxFormulaeVersion
+
+    logInfo "Done! ${influxFormulaeVersion} is now active:"
+
+    influx -version  # V1
+    # influx version # V2
+}
+
 # Functions - K8's
 # List available kubectl contexts
 function kswl() {
@@ -404,6 +442,15 @@ function dsh() {
 # Runs artisan on a docker container of your choice
 function dam() {
     det $1 php artisan migrate:fresh --seed
+}
+
+# Gets the mac address for each running Docker container
+function dlmac() {
+    for ID in `docker ps -q`; do
+        NAME=$(docker inspect -f '{{.Config.Image}}' "${ID}")
+        MAC=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.MacAddress}}{{end}}' "${ID}")
+        echo "${ID} :: ${MAC} :: ${NAME}";
+    done
 }
 
 

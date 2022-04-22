@@ -66,20 +66,14 @@ alias sadd="ssh-add -A"
 alias rmkh="rm ~/.ssh/known_hosts"
 alias sdo="ssh -i ~/.ssh/DO_OXRMBP.pem root@167.99.207.152"
 
-# Alias
-alias y="yadm"
-alias ya="y add"
-alias yaa="y add -u"
-alias ys="y status"
-alias yc="y commit -m"
-alias yca="yc -a"
-alias yca="yaa && yc"
-alias yp="y push"
-alias yu="yaa && yc \"Update stuff\" && yp"
-alias yl="y list -a"
-alias ygs="yadm git-crypt status -e"
-# alias ygsa="yl | awk '{ print "\""$0"\""}' | xargs -L1 yadm git-crypt status -e"
-alias ygsa="yl | sed -e \"s/ /\\\ /g\" | xargs -L1 yadm git-crypt status -e"
+# Alias - Docker Apps
+# https://stackoverflow.com/a/10382323/4494375
+alias umdb="cd ~/git/homelab/docker/mariadb && dcud && cd -" #   Up MariaDB
+alias dmdb="cd ~/git/homelab/docker/mariadb && dcd  && cd -" # Down MariaDB
+alias updb="cd ~/git/homelab/docker/postgresql && dcud && cd -" #   Up PostgreSQL
+alias dpdb="cd ~/git/homelab/docker/postgresql && dcd  && cd -" # Down PostgreSQL
+alias unp="cd ~/git/homelab/docker/nginx-php && dcud && cd -" #   Up Nginx + PHP
+alias dnp="cd ~/git/homelab/docker/nginx-php && dcd  && cd -" # Down Nginx + PHP
 
 # Aliases - Brew
 alias b="brew"
