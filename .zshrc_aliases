@@ -43,6 +43,9 @@ alias hst="hs | tail -n"
 alias unlock-dashcam="chflags -R nouchg '/Volumes/NEXTBASE/DCIM/PROTECTED'"
 alias aptupd="sudo apt update && sudo apt dist-upgrade && sudo apt autoremove && sudo apt clean"
 
+# Aliases - Scripts
+alias sdl="~/git/homelab/scripts/spotdl/spotdl"
+
 # Aliases - PHP
 alias phpr="php -f"
 
@@ -92,6 +95,7 @@ alias bcu="b cu"
 alias bu="bud && bug && bc"
 
 # Aliases - VSCode
+alias code="code -n"
 alias cod="code ."
 
 # Aliases - Sublime
